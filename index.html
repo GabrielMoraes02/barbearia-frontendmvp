@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbearia - Painel Administrativo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Área visível na borda esquerda que revela o menu -->
+    <div class="sidebar-trigger"></div>
+
+    <!-- Menu lateral (aparece no hover) -->
+    <nav class="sidebar">
+        <h2 class="logo">Barbearia</h2>
+        <ul class="menu">
+            <li class="menu-item active" data-secao="geral">Geral</li>
+            <li class="menu-item" data-secao="barbeiros">Barbeiros</li>
+            <li class="menu-item" data-secao="tipos-corte">Tipos de Corte</li>
+            <li class="menu-item" data-secao="cortes">Cortes</li>
+            <li class="menu-item" data-secao="agendamentos">Agendamentos</li>
+            <li class="menu-item" data-secao="relatorios">Relatórios</li>
+        </ul>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <main class="conteudo">
+
+        <!-- Seção: Geral (painel inicial) -->
+        <section id="secao-geral" class="secao">
+            <div class="cabecalho-geral">
+                <p class="subtitulo">Painel</p>
+                <h1>Visão geral</h1>
+            </div>
+
+            <div class="grid-geral">
+
+                <!-- Próximos agendamentos -->
+                <div class="bloco-painel">
+                    <div class="bloco-cabecalho">
+                        <h2>Próximos agendamentos</h2>
+                        <div id="abas-dias" class="abas-dias"></div>
+                    </div>
+                    <div class="cabecalho-colunas-agendamento">
+                        <span>Horário</span>
+                        <span>Cliente</span>
+                        <span>Barbeiro</span>
+                    </div>
+                    <div id="lista-proximos-agendamentos" class="lista-proximos"></div>
+                </div>
+
+                <!-- Ranking da semana -->
+                <div class="bloco-painel">
+                    <h2>Ranking da semana</h2>
+                    <div id="ranking-barras"></div>
+                </div>
+
+            </div>
+
+            <!-- Tipos de corte (catálogo resumido) -->
+            <div class="bloco-painel bloco-largura-total">
+                <h2>Tipos de corte</h2>
+                <table class="tabela-dados tabela-compacta">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-tipos-corte-geral"></tbody>
+                </table>
+            </div>
+
+            <!-- Resumo semanal: um card por dia + faturamento total -->
+            <div class="bloco-painel bloco-largura-total">
+                <h2>Resumo da semana</h2>
+                <div id="cards-resumo-semana" class="cards-resumo-semana"></div>
+            </div>
+        </section>
+
+        <!-- Seção: Barbeiros -->
+        <section id="secao-barbeiros" class="secao oculta">
+            <div class="cabecalho-acao">
+                <h1>Barbeiros</h1>
+                <button id="btn-abrir-modal-barbeiro">Adicionar barbeiro</button>
+            </div>
+
+            <table class="tabela-dados">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-barbeiros"></tbody>
+            </table>
+        </section>
+
+        <!-- Seção: Tipos de Corte -->
+        <section id="secao-tipos-corte" class="secao oculta">
+            <div class="cabecalho-acao">
+                <h1>Tipos de Corte</h1>
+                <button id="btn-abrir-modal-tipo-corte">Adicionar tipo de corte</button>
+            </div>
+
+            <table class="tabela-dados">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Valor</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-tipos-corte"></tbody>
+            </table>
+        </section>
+
+        <!-- Seção: Cortes -->
+        <section id="secao-cortes" class="secao oculta">
+            <div class="cabecalho-acao">
+                <h1>Cortes</h1>
+                <button id="btn-abrir-modal-corte">Registrar corte</button>
+            </div>
+
+            <table class="tabela-dados">
+                <thead>
+                    <tr>
+                        <th>Barbeiro</th>
+                        <th>Serviços</th>
+                        <th>Valor total</th>
+                        <th>Data</th>
+                        <th>Pagamento</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-cortes"></tbody>
+            </table>
+        </section>
+
+        <!-- Seção: Agendamentos -->
+        <section id="secao-agendamentos" class="secao oculta">
+            <div class="cabecalho-acao">
+                <h1>Agendamentos</h1>
+                <button id="btn-abrir-modal-agendamento">Novo agendamento</button>
+            </div>
+
+            <table class="tabela-dados">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Horário</th>
+                        <th>Barbeiro</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-agendamentos"></tbody>
+            </table>
+        </section>
+
+        <!-- Seção: Relatórios -->
+        <section id="secao-relatorios" class="secao oculta">
+            <h1>Relatórios</h1>
+
+            <div class="bloco-relatorio">
+                <h2>Relatório por período</h2>
+                <div class="campo-com-rotulo">
+                    <label for="input-data-inicio-relatorio">Início</label>
+                    <input type="date" id="input-data-inicio-relatorio">
+                </div>
+                <div class="campo-com-rotulo">
+                    <label for="input-data-fim-relatorio">Fim</label>
+                    <input type="date" id="input-data-fim-relatorio">
+                </div>
+                <button id="btn-gerar-relatorio">Gerar relatório</button>
+                <table class="tabela-dados">
+                    <thead>
+                        <tr>
+                            <th>Barbeiro</th>
+                            <th>Atendimentos</th>
+                            <th>Faturamento</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-relatorio"></tbody>
+                </table>
+            </div>
+
+            <div class="bloco-relatorio">
+                <h2>Ranking de barbeiros</h2>
+                <button id="btn-ver-ranking">Ver ranking</button>
+                <table class="tabela-dados">
+                    <thead>
+                        <tr>
+                            <th>Posição</th>
+                            <th>Barbeiro</th>
+                            <th>Atendimentos</th>
+                            <th>Faturamento</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-ranking"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="rodape">
+        <p>Barbearia · Painel administrativo</p>
+    </footer>
+
+    <!-- Modal: Novo barbeiro -->
+    <div id="modal-barbeiro" class="modal-overlay oculta">
+        <div class="modal-caixa">
+            <h2>Novo barbeiro</h2>
+            <form id="form-barbeiro">
+                <input type="text" id="input-nome-barbeiro" placeholder="Nome do barbeiro" required>
+                <input type="text" id="input-telefone-barbeiro" placeholder="Telefone (opcional)">
+                <div class="modal-botoes">
+                    <button type="button" class="btn-secundario btn-cancelar-modal" data-modal="modal-barbeiro">Cancelar</button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Novo tipo de corte -->
+    <div id="modal-tipo-corte" class="modal-overlay oculta">
+        <div class="modal-caixa">
+            <h2>Novo tipo de corte</h2>
+            <form id="form-tipo-corte">
+                <input type="text" id="input-nome-tipo" placeholder="Nome do corte" required>
+                <input type="number" id="input-valor-tipo" placeholder="Valor (R$)" step="0.01" required>
+                <div class="modal-botoes">
+                    <button type="button" class="btn-secundario btn-cancelar-modal" data-modal="modal-tipo-corte">Cancelar</button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Registrar corte -->
+    <div id="modal-corte" class="modal-overlay oculta">
+        <div class="modal-caixa">
+            <h2>Registrar atendimento</h2>
+            <form id="form-corte">
+                <select id="select-barbeiro-corte" required></select>
+
+                <label class="rotulo-campo">Serviços realizados</label>
+                <div id="checkboxes-tipos-corte" class="checkboxes-servicos"></div>
+
+                <input type="date" id="input-data-corte" required>
+                <select id="select-forma-pagamento" required>
+                    <option value="">Forma de pagamento</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Cartão de Débito">Cartão de Débito</option>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Pix">Pix</option>
+                </select>
+                <p class="valor-total-preview">Total: <span id="preview-valor-total">R$ 0.00</span></p>
+                <div class="modal-botoes">
+                    <button type="button" class="btn-secundario btn-cancelar-modal" data-modal="modal-corte">Cancelar</button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Novo agendamento -->
+    <div id="modal-agendamento" class="modal-overlay oculta">
+        <div class="modal-caixa">
+            <h2>Novo agendamento</h2>
+            <form id="form-agendamento">
+                <select id="select-barbeiro-agendamento" required></select>
+                <input type="text" id="input-nome-cliente" placeholder="Nome do cliente" required>
+                <input type="date" id="input-data-agendamento" required>
+                <button type="button" id="btn-ver-disponibilidade">Ver horários disponíveis</button>
+                <div id="grade-horarios"></div>
+                <input type="hidden" id="input-horario-selecionado">
+                <div class="modal-botoes">
+                    <button type="button" class="btn-secundario btn-cancelar-modal" data-modal="modal-agendamento">Cancelar</button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -564,3 +564,17 @@ button:hover {
     color: #a3713a;
     font-weight: 500;
 }
+
+.campos-outros {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 0.6rem 0.8rem;
+    background-color: #f5eedc;
+    border: 1px solid #e8ddc9;
+    border-radius: 6px;
+}
+
+.campos-outros.oculta {
+    display: none;
+}

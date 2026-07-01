@@ -17,7 +17,6 @@ sidebarTrigger.addEventListener("mouseenter", abrirMenu);
 sidebarMenu.addEventListener("mouseenter", abrirMenu);
 sidebarMenu.addEventListener("mouseleave", fecharMenu);
 
-// Controla a troca de seções ao clicar no menu lateral
 const menuItens = document.querySelectorAll(".menu-item");
 const secoes = document.querySelectorAll(".secao");
 
@@ -25,15 +24,12 @@ menuItens.forEach(item => {
     item.addEventListener("click", () => {
         menuItens.forEach(i => i.classList.remove("active"));
         item.classList.add("active");
-
         secoes.forEach(secao => secao.classList.add("oculta"));
-
         const secaoId = "secao-" + item.dataset.secao;
         document.getElementById(secaoId).classList.remove("oculta");
     });
 });
 
-// Funções genéricas para abrir e fechar modais
 function abrirModal(idModal) {
     document.getElementById(idModal).classList.remove("oculta");
 }
@@ -62,14 +58,11 @@ async function carregarBarbeiros() {
     try {
         const resposta = await fetch(`${API_URL}/barbeiros`);
         const barbeiros = await resposta.json();
-
         tabelaBarbeiros.innerHTML = "";
-
         if (barbeiros.length === 0) {
             tabelaBarbeiros.innerHTML = `<tr><td colspan="3" class="mensagem-vazia-tabela">Nenhum barbeiro cadastrado</td></tr>`;
             return;
         }
-
         barbeiros.forEach(barbeiro => {
             const linha = document.createElement("tr");
             linha.innerHTML = `
@@ -79,11 +72,9 @@ async function carregarBarbeiros() {
             `;
             tabelaBarbeiros.appendChild(linha);
         });
-
         document.querySelectorAll("#tabela-barbeiros .btn-remover").forEach(botao => {
             botao.addEventListener("click", () => removerBarbeiro(botao.dataset.id));
         });
-
     } catch (erro) {
         console.error("Erro ao carregar barbeiros:", erro);
     }
@@ -91,21 +82,17 @@ async function carregarBarbeiros() {
 
 formBarbeiro.addEventListener("submit", async (evento) => {
     evento.preventDefault();
-
     const nome = document.getElementById("input-nome-barbeiro").value;
     const telefone = document.getElementById("input-telefone-barbeiro").value;
-
     try {
         await fetch(`${API_URL}/barbeiros`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ nome, telefone })
         });
-
         formBarbeiro.reset();
         fecharModal("modal-barbeiro");
         carregarBarbeiros();
-
     } catch (erro) {
         console.error("Erro ao cadastrar barbeiro:", erro);
     }
@@ -131,14 +118,11 @@ async function carregarTiposCorte() {
     try {
         const resposta = await fetch(`${API_URL}/tipos_corte`);
         const tipos = await resposta.json();
-
         tabelaTiposCorte.innerHTML = "";
-
         if (tipos.length === 0) {
             tabelaTiposCorte.innerHTML = `<tr><td colspan="3" class="mensagem-vazia-tabela">Nenhum tipo de corte cadastrado</td></tr>`;
             return;
         }
-
         tipos.forEach(tipo => {
             const linha = document.createElement("tr");
             linha.innerHTML = `
@@ -148,11 +132,9 @@ async function carregarTiposCorte() {
             `;
             tabelaTiposCorte.appendChild(linha);
         });
-
         document.querySelectorAll("#tabela-tipos-corte .btn-remover").forEach(botao => {
             botao.addEventListener("click", () => removerTipoCorte(botao.dataset.id));
         });
-
     } catch (erro) {
         console.error("Erro ao carregar tipos de corte:", erro);
     }
@@ -160,22 +142,18 @@ async function carregarTiposCorte() {
 
 formTipoCorte.addEventListener("submit", async (evento) => {
     evento.preventDefault();
-
     const nome = document.getElementById("input-nome-tipo").value;
     const valor = parseFloat(document.getElementById("input-valor-tipo").value);
-
     try {
         await fetch(`${API_URL}/tipos_corte`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ nome, valor })
         });
-
         formTipoCorte.reset();
         fecharModal("modal-tipo-corte");
         carregarTiposCorte();
         carregarTiposCorteNoGeral();
-
     } catch (erro) {
         console.error("Erro ao cadastrar tipo de corte:", erro);
     }
@@ -201,14 +179,11 @@ async function carregarTiposCorteNoGeral() {
     try {
         const resposta = await fetch(`${API_URL}/tipos_corte`);
         const tipos = await resposta.json();
-
         tabelaTiposCorteGeral.innerHTML = "";
-
         if (tipos.length === 0) {
             tabelaTiposCorteGeral.innerHTML = `<tr><td colspan="2" class="mensagem-vazia-tabela">Nenhum tipo de corte cadastrado</td></tr>`;
             return;
         }
-
         tipos.forEach(tipo => {
             const linha = document.createElement("tr");
             linha.innerHTML = `
@@ -217,7 +192,6 @@ async function carregarTiposCorteNoGeral() {
             `;
             tabelaTiposCorteGeral.appendChild(linha);
         });
-
     } catch (erro) {
         console.error("Erro ao carregar tipos de corte no painel geral:", erro);
     }
@@ -225,28 +199,44 @@ async function carregarTiposCorteNoGeral() {
 
 carregarTiposCorteNoGeral();
 
-// =================== CORTES (ATENDIMENTOS COM MÚLTIPLOS SERVIÇOS) ===================
+// =================== CORTES (COM OPÇÃO "OUTROS") ===================
 
 const formCorte = document.getElementById("form-corte");
 const tabelaCortes = document.getElementById("tabela-cortes");
 const selectBarbeiroCorte = document.getElementById("select-barbeiro-corte");
 const checkboxesTiposCorte = document.getElementById("checkboxes-tipos-corte");
 const previewValorTotal = document.getElementById("preview-valor-total");
+const checkboxOutros = document.getElementById("checkbox-outros");
+const camposOutros = document.getElementById("campos-outros");
+const inputDescricaoOutros = document.getElementById("input-descricao-outros");
+const inputValorOutros = document.getElementById("input-valor-outros");
+
+// Mostra ou esconde os campos de "Outros" conforme o checkbox
+checkboxOutros.addEventListener("change", () => {
+    if (checkboxOutros.checked) {
+        camposOutros.classList.remove("oculta");
+    } else {
+        camposOutros.classList.add("oculta");
+        inputDescricaoOutros.value = "";
+        inputValorOutros.value = "";
+    }
+    atualizarPreviewValorTotal();
+});
+
+// Atualiza o preview ao digitar o valor de "Outros"
+inputValorOutros.addEventListener("input", atualizarPreviewValorTotal);
 
 async function preencherSelectBarbeiros(selectElemento) {
     try {
         const resposta = await fetch(`${API_URL}/barbeiros`);
         const barbeiros = await resposta.json();
-
         selectElemento.innerHTML = `<option value="">Selecione o barbeiro</option>`;
-
         barbeiros.forEach(barbeiro => {
             const opcao = document.createElement("option");
             opcao.value = barbeiro.id;
             opcao.textContent = barbeiro.nome;
             selectElemento.appendChild(opcao);
         });
-
     } catch (erro) {
         console.error("Erro ao preencher select de barbeiros:", erro);
     }
@@ -256,9 +246,7 @@ async function preencherCheckboxesTiposCorte() {
     try {
         const resposta = await fetch(`${API_URL}/tipos_corte`);
         const tipos = await resposta.json();
-
         checkboxesTiposCorte.innerHTML = "";
-
         tipos.forEach(tipo => {
             const linha = document.createElement("label");
             linha.classList.add("checkbox-servico");
@@ -268,13 +256,10 @@ async function preencherCheckboxesTiposCorte() {
             `;
             checkboxesTiposCorte.appendChild(linha);
         });
-
         checkboxesTiposCorte.querySelectorAll("input[type=checkbox]").forEach(checkbox => {
             checkbox.addEventListener("change", atualizarPreviewValorTotal);
         });
-
         atualizarPreviewValorTotal();
-
     } catch (erro) {
         console.error("Erro ao preencher checkboxes de tipos de corte:", erro);
     }
@@ -286,6 +271,9 @@ function atualizarPreviewValorTotal() {
     marcados.forEach(checkbox => {
         total += parseFloat(checkbox.dataset.valor);
     });
+    if (checkboxOutros.checked && inputValorOutros.value) {
+        total += parseFloat(inputValorOutros.value);
+    }
     previewValorTotal.textContent = `R$ ${total.toFixed(2)}`;
 }
 
@@ -293,17 +281,13 @@ async function carregarCortes() {
     try {
         const resposta = await fetch(`${API_URL}/cortes`);
         const cortes = await resposta.json();
-
         tabelaCortes.innerHTML = "";
-
         if (cortes.length === 0) {
             tabelaCortes.innerHTML = `<tr><td colspan="6" class="mensagem-vazia-tabela">Nenhum atendimento registrado</td></tr>`;
             return;
         }
-
         cortes.forEach(corte => {
             const nomesServicos = corte.servicos.map(s => s.nome).join(", ");
-
             const linha = document.createElement("tr");
             linha.innerHTML = `
                 <td>${corte.barbeiro_nome}</td>
@@ -315,11 +299,9 @@ async function carregarCortes() {
             `;
             tabelaCortes.appendChild(linha);
         });
-
         document.querySelectorAll("#tabela-cortes .btn-remover").forEach(botao => {
             botao.addEventListener("click", () => removerCorte(botao.dataset.id));
         });
-
     } catch (erro) {
         console.error("Erro ao carregar cortes:", erro);
     }
@@ -333,28 +315,64 @@ formCorte.addEventListener("submit", async (evento) => {
     const forma_pagamento = document.getElementById("select-forma-pagamento").value;
 
     const marcados = checkboxesTiposCorte.querySelectorAll("input[type=checkbox]:checked");
-    const tipos_corte_ids = Array.from(marcados).map(checkbox => parseInt(checkbox.value));
+    let tipos_corte_ids = Array.from(marcados).map(checkbox => parseInt(checkbox.value));
 
-    if (tipos_corte_ids.length === 0) {
+    if (tipos_corte_ids.length === 0 && !checkboxOutros.checked) {
         alert("Selecione pelo menos um serviço realizado.");
         return;
     }
 
-    try {
-        await fetch(`${API_URL}/cortes`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ barbeiro_id, tipos_corte_ids, data, forma_pagamento })
-        });
+    if (checkboxOutros.checked) {
+        const descricao = inputDescricaoOutros.value.trim();
+        const valorOutros = parseFloat(inputValorOutros.value);
 
-        formCorte.reset();
-        fecharModal("modal-corte");
-        carregarCortes();
-        carregarResumoSemana();
+        if (!descricao || isNaN(valorOutros) || valorOutros <= 0) {
+            alert("Preencha a descrição e o valor do serviço em 'Outros'.");
+            return;
+        }
 
-    } catch (erro) {
-        console.error("Erro ao registrar atendimento:", erro);
+        try {
+            const respostaTipo = await fetch(`${API_URL}/tipos_corte`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nome: descricao, valor: valorOutros })
+            });
+            const novoTipo = await respostaTipo.json();
+            tipos_corte_ids.push(novoTipo.id);
+
+            await fetch(`${API_URL}/cortes`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ barbeiro_id, tipos_corte_ids, data, forma_pagamento })
+            });
+
+            await fetch(`${API_URL}/tipos_corte/${novoTipo.id}`, { method: "DELETE" });
+
+        } catch (erro) {
+            console.error("Erro ao registrar serviço extra:", erro);
+            return;
+        }
+    } else {
+        try {
+            await fetch(`${API_URL}/cortes`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ barbeiro_id, tipos_corte_ids, data, forma_pagamento })
+            });
+        } catch (erro) {
+            console.error("Erro ao registrar atendimento:", erro);
+            return;
+        }
     }
+
+    formCorte.reset();
+    checkboxOutros.checked = false;
+    camposOutros.classList.add("oculta");
+    inputDescricaoOutros.value = "";
+    inputValorOutros.value = "";
+    fecharModal("modal-corte");
+    carregarCortes();
+    carregarResumoSemana();
 });
 
 async function removerCorte(id) {
@@ -370,6 +388,10 @@ async function removerCorte(id) {
 document.getElementById("btn-abrir-modal-corte").addEventListener("click", () => {
     preencherSelectBarbeiros(selectBarbeiroCorte);
     preencherCheckboxesTiposCorte();
+    checkboxOutros.checked = false;
+    camposOutros.classList.add("oculta");
+    inputDescricaoOutros.value = "";
+    inputValorOutros.value = "";
 });
 
 carregarCortes();
@@ -386,14 +408,11 @@ async function carregarAgendamentos() {
     try {
         const resposta = await fetch(`${API_URL}/agendamentos`);
         const agendamentos = await resposta.json();
-
         tabelaAgendamentos.innerHTML = "";
-
         if (agendamentos.length === 0) {
             tabelaAgendamentos.innerHTML = `<tr><td colspan="4" class="mensagem-vazia-tabela">Nenhum agendamento</td></tr>`;
             return;
         }
-
         agendamentos.forEach(agendamento => {
             const linha = document.createElement("tr");
             linha.innerHTML = `
@@ -404,11 +423,9 @@ async function carregarAgendamentos() {
             `;
             tabelaAgendamentos.appendChild(linha);
         });
-
         document.querySelectorAll("#tabela-agendamentos .btn-remover").forEach(botao => {
             botao.addEventListener("click", () => cancelarAgendamento(botao.dataset.id));
         });
-
     } catch (erro) {
         console.error("Erro ao carregar agendamentos:", erro);
     }
@@ -417,24 +434,19 @@ async function carregarAgendamentos() {
 async function consultarDisponibilidade() {
     const barbeiroId = selectBarbeiroAgendamento.value;
     const data = document.getElementById("input-data-agendamento").value;
-
     if (!barbeiroId || !data) {
         alert("Selecione o barbeiro e a data antes de ver os horários.");
         return;
     }
-
     try {
         const resposta = await fetch(`${API_URL}/agendamentos/disponibilidade?barbeiro_id=${barbeiroId}&data=${data}`);
         const horarios = await resposta.json();
-
         gradeHorarios.innerHTML = "";
         inputHorarioSelecionado.value = "";
-
         horarios.forEach(item => {
             const slot = document.createElement("div");
             slot.classList.add("horario-slot", item.status);
             slot.textContent = item.horario;
-
             if (item.status === "disponivel") {
                 slot.addEventListener("click", () => {
                     document.querySelectorAll(".horario-slot.selecionado").forEach(s => {
@@ -446,10 +458,8 @@ async function consultarDisponibilidade() {
                     inputHorarioSelecionado.value = item.horario;
                 });
             }
-
             gradeHorarios.appendChild(slot);
         });
-
     } catch (erro) {
         console.error("Erro ao consultar disponibilidade:", erro);
     }
@@ -459,37 +469,30 @@ document.getElementById("btn-ver-disponibilidade").addEventListener("click", con
 
 formAgendamento.addEventListener("submit", async (evento) => {
     evento.preventDefault();
-
     const barbeiro_id = selectBarbeiroAgendamento.value;
     const nome_cliente = document.getElementById("input-nome-cliente").value;
     const data = document.getElementById("input-data-agendamento").value;
     const horario = inputHorarioSelecionado.value;
-
     if (!horario) {
         alert("Selecione um horário disponível na grade antes de salvar.");
         return;
     }
-
     const data_hora = `${data} ${horario}`;
-
     try {
         const resposta = await fetch(`${API_URL}/agendamentos`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ barbeiro_id, nome_cliente, data_hora })
         });
-
         if (resposta.status === 409) {
             alert("Esse horário já foi ocupado. Escolha outro.");
             return;
         }
-
         formAgendamento.reset();
         gradeHorarios.innerHTML = "";
         fecharModal("modal-agendamento");
         carregarAgendamentos();
         carregarProximosAgendamentos();
-
     } catch (erro) {
         console.error("Erro ao criar agendamento:", erro);
     }
@@ -516,7 +519,6 @@ carregarAgendamentos();
 
 const abasDias = document.getElementById("abas-dias");
 const listaProximosAgendamentos = document.getElementById("lista-proximos-agendamentos");
-
 let diaSelecionadoOffset = 0;
 
 function formatarDataISO(data) {
@@ -529,11 +531,9 @@ function formatarDataISO(data) {
 function montarAbasDias() {
     const nomesDias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
     abasDias.innerHTML = "";
-
     for (let i = 0; i <= 4; i++) {
         const data = new Date();
         data.setDate(data.getDate() + i);
-
         const aba = document.createElement("button");
         aba.classList.add("aba-dia");
         if (i === diaSelecionadoOffset) aba.classList.add("ativa");
@@ -543,7 +543,6 @@ function montarAbasDias() {
             montarAbasDias();
             carregarProximosAgendamentos();
         });
-
         abasDias.appendChild(aba);
     }
 }
@@ -553,10 +552,8 @@ async function carregarProximosAgendamentos() {
         const data = new Date();
         data.setDate(data.getDate() + diaSelecionadoOffset);
         const dataISO = formatarDataISO(data);
-
         const resposta = await fetch(`${API_URL}/agendamentos?data=${dataISO}`);
         const agendamentos = await resposta.json();
-
         let agendamentosFiltrados = agendamentos;
         if (diaSelecionadoOffset === 0) {
             const horaAtual = new Date().toTimeString().slice(0, 5);
@@ -565,14 +562,11 @@ async function carregarProximosAgendamentos() {
                 return horaAgendamento >= horaAtual;
             });
         }
-
         listaProximosAgendamentos.innerHTML = "";
-
         if (agendamentosFiltrados.length === 0) {
             listaProximosAgendamentos.innerHTML = `<p class="mensagem-vazia">Nenhum agendamento para este dia</p>`;
             return;
         }
-
         agendamentosFiltrados.forEach(agendamento => {
             const horario = agendamento.data_hora.split(" ")[1];
             const item = document.createElement("div");
@@ -584,7 +578,6 @@ async function carregarProximosAgendamentos() {
             `;
             listaProximosAgendamentos.appendChild(item);
         });
-
     } catch (erro) {
         console.error("Erro ao carregar próximos agendamentos:", erro);
     }
@@ -601,14 +594,11 @@ function obterInicioDaSemana() {
     const hoje = new Date();
     const diaSemana = hoje.getDay();
     const diasParaSegunda = diaSemana === 0 ? 6 : diaSemana - 1;
-
     const segunda = new Date(hoje);
     segunda.setDate(hoje.getDate() - diasParaSegunda);
-
     return formatarDataISO(segunda);
 }
 
-// Calcula a data do domingo (fim da semana), 6 dias depois do início (segunda)
 function obterFimDaSemana(dataInicioISO) {
     const [ano, mes, dia] = dataInicioISO.split("-").map(Number);
     const dataFim = new Date(ano, mes - 1, dia + 6);
@@ -621,27 +611,19 @@ async function carregarRankingGeral() {
         const dataFim = obterFimDaSemana(dataInicio);
         const resposta = await fetch(`${API_URL}/relatorio?data_inicio=${dataInicio}&data_fim=${dataFim}`);
         const dados = await resposta.json();
-
         const barbeiros = dados.barbeiros;
-
         rankingBarras.innerHTML = "";
-
         if (barbeiros.length === 0) {
             rankingBarras.innerHTML = `<p class="mensagem-vazia">Nenhum atendimento registrado nesta semana</p>`;
             return;
         }
-
         barbeiros.sort((a, b) => b.faturamento_total - a.faturamento_total);
-
         const maiorFaturamento = barbeiros[0].faturamento_total;
-
         barbeiros.forEach((barbeiro, indice) => {
             const porcentagemBarra = maiorFaturamento > 0 ? (barbeiro.faturamento_total / maiorFaturamento) * 100 : 0;
-
             const item = document.createElement("div");
             item.classList.add("item-ranking");
             if (indice === 0) item.classList.add("primeiro");
-
             item.innerHTML = `
                 <div class="linha-topo">
                     <span class="nome">${barbeiro.barbeiro_nome}</span>
@@ -653,7 +635,6 @@ async function carregarRankingGeral() {
             `;
             rankingBarras.appendChild(item);
         });
-
     } catch (erro) {
         console.error("Erro ao carregar ranking geral:", erro);
     }
@@ -661,7 +642,7 @@ async function carregarRankingGeral() {
 
 carregarRankingGeral();
 
-// =================== PAINEL GERAL: RESUMO SEMANAL (CARD POR DIA) ===================
+// =================== PAINEL GERAL: RESUMO SEMANAL ===================
 
 const cardsResumoSemana = document.getElementById("cards-resumo-semana");
 
@@ -669,10 +650,8 @@ async function buscarResumoDoDia(dataISO) {
     try {
         const resposta = await fetch(`${API_URL}/cortes?data=${dataISO}`);
         const cortesDoDia = await resposta.json();
-
         const faturamento = cortesDoDia.reduce((total, corte) => total + corte.valor_total, 0);
         return { quantidade: cortesDoDia.length, faturamento };
-
     } catch (erro) {
         console.error("Erro ao buscar resumo do dia:", erro);
         return { quantidade: 0, faturamento: 0 };
@@ -683,23 +662,17 @@ async function carregarResumoSemana() {
     const nomesDias = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
     const inicioSemana = obterInicioDaSemana();
     const hojeISO = formatarDataISO(new Date());
-
     cardsResumoSemana.innerHTML = "";
-
     let faturamentoSemanal = 0;
-
     for (let i = 0; i < 7; i++) {
         const [anoInicio, mesInicio, diaInicio] = inicioSemana.split("-").map(Number);
         const dataDia = new Date(anoInicio, mesInicio - 1, diaInicio + i);
         const dataISO = formatarDataISO(dataDia);
-
         const resumo = await buscarResumoDoDia(dataISO);
         faturamentoSemanal += resumo.faturamento;
-
         const card = document.createElement("div");
         card.classList.add("card-dia");
         if (dataISO === hojeISO) card.classList.add("hoje");
-
         card.innerHTML = `
             <p class="nome-dia">${nomesDias[i]}</p>
             <p class="qtd-cortes">${resumo.quantidade} corte${resumo.quantidade === 1 ? "" : "s"}</p>
@@ -707,7 +680,6 @@ async function carregarResumoSemana() {
         `;
         cardsResumoSemana.appendChild(card);
     }
-
     const cardTotal = document.createElement("div");
     cardTotal.classList.add("card-dia", "total");
     cardTotal.innerHTML = `
@@ -727,27 +699,21 @@ const tabelaRanking = document.getElementById("tabela-ranking");
 const inputDataInicioRelatorio = document.getElementById("input-data-inicio-relatorio");
 const inputDataFimRelatorio = document.getElementById("input-data-fim-relatorio");
 
-// Busca o relatório no período escolhido pelo usuário (data início e data fim)
 async function gerarRelatorioSemanal() {
     const dataInicio = inputDataInicioRelatorio.value;
     const dataFim = inputDataFimRelatorio.value;
-
     if (!dataInicio || !dataFim) {
         alert("Escolha a data de início e a data de fim para gerar o relatório.");
         return;
     }
-
     try {
         const resposta = await fetch(`${API_URL}/relatorio?data_inicio=${dataInicio}&data_fim=${dataFim}`);
         const dados = await resposta.json();
-
         tabelaRelatorio.innerHTML = "";
-
         if (dados.barbeiros.length === 0) {
             tabelaRelatorio.innerHTML = `<tr><td colspan="3" class="mensagem-vazia-tabela">Nenhum atendimento neste período</td></tr>`;
             return;
         }
-
         dados.barbeiros.forEach(barbeiro => {
             const linha = document.createElement("tr");
             linha.innerHTML = `
@@ -757,25 +723,20 @@ async function gerarRelatorioSemanal() {
             `;
             tabelaRelatorio.appendChild(linha);
         });
-
     } catch (erro) {
         console.error("Erro ao gerar relatório:", erro);
     }
 }
 
-// Busca o ranking completo de barbeiros
 async function carregarRankingCompleto() {
     try {
         const resposta = await fetch(`${API_URL}/ranking`);
         const ranking = await resposta.json();
-
         tabelaRanking.innerHTML = "";
-
         if (ranking.length === 0) {
             tabelaRanking.innerHTML = `<tr><td colspan="4" class="mensagem-vazia-tabela">Nenhum atendimento registrado</td></tr>`;
             return;
         }
-
         ranking.forEach((barbeiro, indice) => {
             const linha = document.createElement("tr");
             linha.innerHTML = `
@@ -786,7 +747,6 @@ async function carregarRankingCompleto() {
             `;
             tabelaRanking.appendChild(linha);
         });
-
     } catch (erro) {
         console.error("Erro ao carregar ranking completo:", erro);
     }

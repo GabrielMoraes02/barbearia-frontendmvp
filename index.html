@@ -8,10 +8,8 @@
 </head>
 <body>
 
-    <!-- Área visível na borda esquerda que revela o menu -->
     <div class="sidebar-trigger"></div>
 
-    <!-- Menu lateral (aparece no hover) -->
     <nav class="sidebar">
         <h2 class="logo">Barbearia</h2>
         <ul class="menu">
@@ -24,10 +22,8 @@
         </ul>
     </nav>
 
-    <!-- Conteúdo principal -->
     <main class="conteudo">
 
-        <!-- Seção: Geral (painel inicial) -->
         <section id="secao-geral" class="secao">
             <div class="cabecalho-geral">
                 <p class="subtitulo">Painel</p>
@@ -35,8 +31,6 @@
             </div>
 
             <div class="grid-geral">
-
-                <!-- Próximos agendamentos -->
                 <div class="bloco-painel">
                     <div class="bloco-cabecalho">
                         <h2>Próximos agendamentos</h2>
@@ -50,15 +44,12 @@
                     <div id="lista-proximos-agendamentos" class="lista-proximos"></div>
                 </div>
 
-                <!-- Ranking da semana -->
                 <div class="bloco-painel">
                     <h2>Ranking da semana</h2>
                     <div id="ranking-barras"></div>
                 </div>
-
             </div>
 
-            <!-- Tipos de corte (catálogo resumido) -->
             <div class="bloco-painel bloco-largura-total">
                 <h2>Tipos de corte</h2>
                 <table class="tabela-dados tabela-compacta">
@@ -72,20 +63,17 @@
                 </table>
             </div>
 
-            <!-- Resumo semanal: um card por dia + faturamento total -->
             <div class="bloco-painel bloco-largura-total">
                 <h2>Resumo da semana</h2>
                 <div id="cards-resumo-semana" class="cards-resumo-semana"></div>
             </div>
         </section>
 
-        <!-- Seção: Barbeiros -->
         <section id="secao-barbeiros" class="secao oculta">
             <div class="cabecalho-acao">
                 <h1>Barbeiros</h1>
                 <button id="btn-abrir-modal-barbeiro">Adicionar barbeiro</button>
             </div>
-
             <table class="tabela-dados">
                 <thead>
                     <tr>
@@ -98,13 +86,11 @@
             </table>
         </section>
 
-        <!-- Seção: Tipos de Corte -->
         <section id="secao-tipos-corte" class="secao oculta">
             <div class="cabecalho-acao">
                 <h1>Tipos de Corte</h1>
                 <button id="btn-abrir-modal-tipo-corte">Adicionar tipo de corte</button>
             </div>
-
             <table class="tabela-dados">
                 <thead>
                     <tr>
@@ -117,13 +103,11 @@
             </table>
         </section>
 
-        <!-- Seção: Cortes -->
         <section id="secao-cortes" class="secao oculta">
             <div class="cabecalho-acao">
                 <h1>Cortes</h1>
                 <button id="btn-abrir-modal-corte">Registrar corte</button>
             </div>
-
             <table class="tabela-dados">
                 <thead>
                     <tr>
@@ -139,13 +123,11 @@
             </table>
         </section>
 
-        <!-- Seção: Agendamentos -->
         <section id="secao-agendamentos" class="secao oculta">
             <div class="cabecalho-acao">
                 <h1>Agendamentos</h1>
                 <button id="btn-abrir-modal-agendamento">Novo agendamento</button>
             </div>
-
             <table class="tabela-dados">
                 <thead>
                     <tr>
@@ -159,7 +141,6 @@
             </table>
         </section>
 
-        <!-- Seção: Relatórios -->
         <section id="secao-relatorios" class="secao oculta">
             <h1>Relatórios</h1>
 
@@ -248,6 +229,18 @@
 
                 <label class="rotulo-campo">Serviços realizados</label>
                 <div id="checkboxes-tipos-corte" class="checkboxes-servicos"></div>
+
+                <!-- Opção "Outros": aparece sempre no final da lista -->
+                <label class="checkbox-servico">
+                    <input type="checkbox" id="checkbox-outros">
+                    Outros
+                </label>
+
+                <!-- Campos extras que aparecem só quando "Outros" é marcado -->
+                <div id="campos-outros" class="campos-outros oculta">
+                    <input type="text" id="input-descricao-outros" placeholder="Descreva o serviço (ex: Reflexo)">
+                    <input type="number" id="input-valor-outros" placeholder="Valor (R$)" step="0.01">
+                </div>
 
                 <input type="date" id="input-data-corte" required>
                 <select id="select-forma-pagamento" required>

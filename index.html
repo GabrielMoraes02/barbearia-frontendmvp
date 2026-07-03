@@ -205,6 +205,22 @@
         </div>
     </div>
 
+    <!-- Modal: Editar barbeiro -->
+    <div id="modal-editar-barbeiro" class="modal-overlay oculta">
+        <div class="modal-caixa">
+            <h2>Editar barbeiro</h2>
+            <form id="form-editar-barbeiro">
+                <input type="hidden" id="input-id-barbeiro-editar">
+                <input type="text" id="input-nome-barbeiro-editar" placeholder="Nome do barbeiro" required>
+                <input type="text" id="input-telefone-barbeiro-editar" placeholder="Telefone (opcional)">
+                <div class="modal-botoes">
+                    <button type="button" class="btn-secundario btn-cancelar-modal" data-modal="modal-editar-barbeiro">Cancelar</button>
+                    <button type="submit">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal: Novo tipo de corte -->
     <div id="modal-tipo-corte" class="modal-overlay oculta">
         <div class="modal-caixa">
@@ -226,22 +242,16 @@
             <h2>Registrar atendimento</h2>
             <form id="form-corte">
                 <select id="select-barbeiro-corte" required></select>
-
                 <label class="rotulo-campo">Serviços realizados</label>
                 <div id="checkboxes-tipos-corte" class="checkboxes-servicos"></div>
-
-                <!-- Opção "Outros": aparece sempre no final da lista -->
                 <label class="checkbox-servico">
                     <input type="checkbox" id="checkbox-outros">
                     Outros
                 </label>
-
-                <!-- Campos extras que aparecem só quando "Outros" é marcado -->
                 <div id="campos-outros" class="campos-outros oculta">
                     <input type="text" id="input-descricao-outros" placeholder="Descreva o serviço (ex: Reflexo)">
                     <input type="number" id="input-valor-outros" placeholder="Valor (R$)" step="0.01">
                 </div>
-
                 <input type="date" id="input-data-corte" required>
                 <select id="select-forma-pagamento" required>
                     <option value="">Forma de pagamento</option>

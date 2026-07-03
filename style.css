@@ -578,3 +578,25 @@ button:hover {
 .campos-outros.oculta {
     display: none;
 }
+
+/* Botões de ação na tabela (editar e remover) */
+.acoes-tabela {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.btn-editar {
+    background-color: #a3713a;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-editar:hover {
+    background-color: #8c5e2d;
+}
